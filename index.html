@@ -279,9 +279,7 @@
                 particleColors[i*3+1] = color.g;
                 particleColors[i*3+2] = color.b;
             }
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-            particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
-            
+           
             const particleMaterial = new THREE.PointsMaterial({ 
                 size: 0.15,               
                 transparent: true, 
