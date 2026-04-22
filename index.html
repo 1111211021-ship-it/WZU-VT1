@@ -209,16 +209,19 @@
         }
 
         function setupEnvironment() {
-            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x999999, 0.8);
-            scene.add(ambientLight);
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
 
-            const directionalLight = new THREE.DirectionalLight(0xfff0dd, 2.0);
-            directionalLight.position.set(2, 5, 3);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            directionalLight.shadow.bias = -0.001;
-            scene.add(directionalLight);
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');   // 中心白色
+            gradient.addColorStop(0.3, 'rgba(255, 200, 100, 0.8)'); // 暖橘色過渡
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');   // 邊緣透明
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 64, 64);
+            return new THREE.CanvasTexture(canvas);
+}
 
             const fillLight = new THREE.DirectionalLight(0xcceeff, 1.2);
             fillLight.position.set(-2, 2, 2);
