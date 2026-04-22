@@ -220,13 +220,12 @@
             directionalLight.shadow.bias = -0.001;
             scene.add(directionalLight);
 
-
             const fillLight = new THREE.DirectionalLight(0xcceeff, 1.2);
             fillLight.position.set(-2, 2, 2);
             scene.add(fillLight);
 
             const floorGeometry = new THREE.PlaneGeometry(50, 50);
-            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a20, roughness: 0.6, metalness: 0.1 });
+            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x8a95a5, roughness: 0.6, metalness: 0.1 });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
@@ -237,7 +236,7 @@
             gridHelper.material.transparent = true;
             gridHelper.material.opacity = 0.5;
             scene.add(gridHelper);
-
+            
             const pedestalGeometry = new THREE.CylinderGeometry(0.8, 1, 0.1, 32);
             const pedestalMaterial = new THREE.MeshStandardMaterial({ color: 0xdbe3ea, roughness: 0.3, metalness: 0.2 });
             const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
