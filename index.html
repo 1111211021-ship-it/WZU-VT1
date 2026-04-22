@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI 虛擬助教</title>
+    <title>AI 虛擬助教 - Polo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 1. 修改 CSS 背景色為深灰 */
+        /* 修改 body 背景色為深灰色，防止載入時閃爍白底 */
         body { margin: 0; overflow: hidden; background-color: #1a1a1a; touch-action: none; }
         #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 0; }
         #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
         .pointer-events-auto { pointer-events: auto; }
         
+        /* 隱藏滾動條但保留滾動功能 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -31,94 +32,13 @@
     <div id="canvas-container"></div>
 
     <div id="ui-layer" class="flex flex-col justify-end p-4 relative">
-        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] sm:w-full max-w-lg pointer-events-auto flex flex-col gap-3 bg-white/10 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-white/30 z-10 transition-all duration-300">
-            <div id="chat-bubble" class="hidden px-2 max-h-40 overflow-y-auto no-scrollbar">
-                <p id="chat-text" class="text-lg text-white font-medium leading-relaxed drop-shadow-sm"></p>
-            </div>
-            <div class="flex gap-2 w-full">
-                <input type="text" id="chat-input" placeholder="與角色對話..." class="flex-1 bg-white/20 text-white placeholder-white/50 px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:border-white/30 focus:bg-white/40 shadow-inner text-base transition-colors font-medium" />
-                <button id="send-btn" class="bg-blue-600/70 hover:bg-blue-500/80 text-white px-5 py-3 rounded-xl shadow transition-all">發送</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-
-        let scene, camera, renderer, controls;
-        let currentVrm = undefined;
-        let particles;
-        const clock = new THREE.Clock();
-
-        // 此處省略了你的其他邏輯變數...
-
-        async function init() {
-            const container = document.getElementById('canvas-container');
-            // await loadConfig(); // 確保執行你的配置載入
-
-            scene = new THREE.Scene();
+        
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] sm:w-full max-w-lg pointer-events-auto flex flex-col gap-3 bg-black/40 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/10 z-10 transition-all duration-300">
             
-            // 2. 修改 3D 場景背景與霧氣顏色 (深灰色 0x1a1a1a)
-            scene.background = new THREE.Color(0x1a1a1a);
-            scene.fog = new THREE.Fog(0x1a1a1a, 5, 30);
+            <div id="chat-bubble" class="hidden px-2 max-h-40 overflow-y-auto no-scrollbar">
+                <p id="chat-text" class="text-lg text-blue-100 font-medium leading-relaxed drop-shadow-sm"></p>
+            </div>
 
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 1.45, -1.6); 
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
-            renderer.outputColorSpace = THREE.SRGBColorSpace;
-            container.appendChild(renderer.domElement);
-
-            controls = new OrbitControls(camera, renderer.domElement);
-            controls.target.set(0, 1.3, 0); 
-            controls.update();
-
-            setupEnvironment();
-            // loadVRM('./AvatarSample_M.vrm'); // 載入模型
-            animate();
-        }
-
-        function setupEnvironment() {
-            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-            directionalLight.position.set(2, 5, 3);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-
-            // 3. 修改地板顏色為更深的灰，讓層次感出來
-            const floorGeometry = new THREE.PlaneGeometry(50, 50);
-            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x121212, roughness: 0.8 });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-            floor.rotation.x = -Math.PI / 2;
-            floor.receiveShadow = true;
-            scene.add(floor);
-
-            // 4. 修改網格線顏色 (改為較暗的線條)
-            const gridHelper = new THREE.GridHelper(50, 100, 0x333333, 0x222222);
-            gridHelper.position.y = 0.01;
-            gridHelper.material.transparent = true;
-            gridHelper.material.opacity = 0.3;
-            scene.add(gridHelper);
-
-            // 5. 修改底座顏色 (稍微亮一點點的灰做區隔)
-            const pedestalGeometry = new THREE.CylinderGeometry(0.8, 1, 0.1, 32);
-            const pedestalMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5 });
-            const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
-            pedestal.position.y = 0.05;
-            pedestal.receiveShadow = true;
-            scene.add(pedestal);
-        }
-
-        // ... 後續 animate, onWindowResize 等函數請維持原狀 ...
-        init();
-    </script>
-</body>
-</html>
+            <div class="flex gap-2 w-full">
+                <button id="mic-btn" class="bg-white/10 hover:bg-white/20 backdrop-blur text-blue-200 px-3 py-3 rounded-xl shadow-inner border border-white/10 transition-colors shrink-0 flex items-center justify-center" title="語音輸入">
+                    <svg id="mic-icon" class
