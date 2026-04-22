@@ -208,8 +208,8 @@
             await loadConfig();
 
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xdbe3ea);
-            scene.fog = new THREE.Fog(0xdbe3ea, 10, 50);
+            scene.background = new THREE.Color(#121218);
+            scene.fog = new THREE.Fog(0x121218, 10, 50);
 
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.set(0, 1.45, -1.6); 
@@ -257,7 +257,7 @@
             scene.add(fillLight);
 
             const floorGeometry = new THREE.PlaneGeometry(50, 50);
-            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x8a95a5, roughness: 0.6, metalness: 0.1 });
+            const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a20, roughness: 0.6, metalness: 0.1 });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
