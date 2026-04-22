@@ -238,16 +238,7 @@
             scene.add(gridHelper);
 
             const pedestalGeometry = new THREE.CylinderGeometry(0.8, 1, 0.1, 32);
-            const particleMaterial = new THREE.PointsMaterial({
-                size: 0.15,               
-                transparent: true,
-                opacity: 0.6,
-                vertexColors: true,
-                map: createCircleTexture(), 
-                blending: THREE.AdditiveBlending, 
-                depthWrite: false,        
-                sizeAttenuation: true     
-            });
+            const pedestalMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a20, roughness: 0.3, metalness: 0.2 });
             const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
             pedestal.position.y = 0.05;
             pedestal.receiveShadow = true;
