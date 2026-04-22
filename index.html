@@ -253,17 +253,29 @@
             ring.position.y = 0.11;
             scene.add(ring);
 
-            const particleCount = 200;
+            const particleCount = 300;
             const particleGeometry = new THREE.BufferGeometry();
             const particlePositions = new Float32Array(particleCount * 3);
             const particleColors = new Float32Array(particleCount * 3);
             const color = new THREE.Color();
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255,255,255,1)');
+            grad.addColorStop(0.2, 'rgba(255,230,150,0.8)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+            const particleTexture = new THREE.CanvasTexture(canvas);
             
             for(let i = 0; i < particleCount; i++) {
                 particlePositions[i*3] = (Math.random() - 0.5) * 10;
                 particlePositions[i*3+1] = Math.random() * 5;
                 particlePositions[i*3+2] = (Math.random() - 0.5) * 10;
-                color.setHSL(Math.random(), 1.0, 0.5);
+                const warmHue = 0.02 + Math.random() * 0.1;
+                color.setHSL(warmHue, 0.9, 0.6);
                 particleColors[i*3] = color.r;
                 particleColors[i*3+1] = color.g;
                 particleColors[i*3+2] = color.b;
@@ -271,10 +283,19 @@
             particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
             particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
             
-            const particleMaterial = new THREE.PointsMaterial({ size: 0.08, transparent: true, opacity: 0.9, vertexColors: true });
+            const particleMaterial = new THREE.PointsMaterial({ 
+                size: 0.15,               
+                transparent: true, 
+                opacity: 0.8, 
+                vertexColors: true,
+                map: particleTexture,      
+                blending: THREE.AdditiveBlending, 
+                depthWrite: false,         
+                sizeAttenuation: true      
+            });
+            
             particles = new THREE.Points(particleGeometry, particleMaterial);
             scene.add(particles);
-        }
 
         function loadVRM(url) {
             const loadingUI = document.getElementById('loading-status');
